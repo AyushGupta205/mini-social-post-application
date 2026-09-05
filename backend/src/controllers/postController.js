@@ -135,13 +135,16 @@ const toggleLike = async (req, res, next) => {
   try {
     const { id } = req.params;
     const userId = req.user._id.toString();
+    const username = req.user.username;
 
     const post = await Post.findById(id);
     if (!post) {
       return sendError(res, 404, 'Post not found');
     }
 
-    const likeIndex = post.likes.findIndex((likedId) => likedId === userId || likedId === req.user.username);
+    const likeIndex = post.likes.findIndex(
+      (liked) => liked === username || liked === userId
+    );
     let isLiked = false;
 
     if (likeIndex > -1) {
@@ -149,8 +152,8 @@ const toggleLike = async (req, res, next) => {
       post.likes.splice(likeIndex, 1);
       isLiked = false;
     } else {
-      // Not liked yet -> Add user ID to likes
-      post.likes.push(userId);
+      // Not liked yet -> Add username to likes array
+      post.likes.push(username);
       isLiked = true;
     }
 

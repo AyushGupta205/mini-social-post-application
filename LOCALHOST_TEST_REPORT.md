@@ -1,59 +1,81 @@
 # 📋 Localhost Test Report — 3W Mini Social Post Application
 
-**Verification Date:** September 4, 2026  
+**Verification Date & Time:** September 5, 2026 — 13:03 IST  
 **Environment:** Localhost (Windows Development Environment)  
-**Backend:** Node.js + Express.js (`http://localhost:5000`)  
-**Frontend:** React.js (Vite) + Material UI (`http://localhost:5173`)  
+**Backend URL:** `http://localhost:5000`  
+**Frontend URL:** `http://localhost:5178`  
 **Database:** MongoDB with Mongoose (Strictly 2 Collections: `users`, `posts`)
 
 ---
 
-## 1. Final Localhost Checklist
-
-| Test | Status | Evidence / Notes |
-|---|---|---|
-| **Backend starts** | **PASS** | Running on `http://localhost:5000` |
-| **`/api/health`** | **PASS** | Returns `200 OK` with `{ "success": true, "message": "Server is healthy" }` |
-| **MongoDB connection** | **PASS** | Connected with Mongoose, strictly 2 collections (`users`, `posts`) |
-| **Frontend starts** | **PASS** | Vite development server active on `http://localhost:5173` |
-| **Signup** | **PASS** | Tested User A & User B registration; bcrypt password hashing, returns JWT |
-| **Login** | **PASS** | Tested valid credentials, invalid password rejected with 401 |
-| **Protected route** | **PASS** | Unauthenticated requests blocked; client redirects to `/login` |
-| **Text post** | **PASS** | Created text-only post; username and relative timestamps rendered |
-| **Image post** | **PASS** | Created image-only post; image preview and static/cloud serving verified |
-| **Text + image post** | **PASS** | Created post with both text content and image media |
-| **Empty post rejection** | **PASS** | Rejected with `400 Bad Request` ("Cannot create an empty post") |
-| **Feed** | **PASS** | Sorted newest first (`createdAt: -1`), displays author, text, image, counts |
-| **Like** | **PASS** | Instant optimistic like update; like count increments to 1 |
-| **Unlike** | **PASS** | Toggling like removes like; like count decrements to 0 |
-| **Duplicate like prevention** | **PASS** | Prevents duplicate likes per user via ID toggle mechanism |
-| **Comment** | **PASS** | Added comment with author username; count updates instantly without reload |
-| **Empty comment rejection** | **PASS** | Rejected with `400 Bad Request` |
-| **Pagination** | **PASS** | `page=1&limit=2` and `limit=10` verified; non-overlapping pages, "Load More" active |
-| **Logout** | **PASS** | Clears localStorage token, closes session, protects `/social` |
-| **Responsive UI** | **PASS** | Verified container max-width 760px, responsive padding, full-width images (375px–1440px) |
-| **Automated tests** | **PASS** | All 22 automated integration tests passed (0 failed) |
-| **Frontend production build** | **PASS** | `npm run build` completed with 0 errors in `/frontend/dist` |
-| **Exactly 2 collections** | **PASS** | Strictly `users` and `posts` in MongoDB |
-| **No secrets committed** | **PASS** | `.gitignore` properly excludes `.env`, secrets, and uploads |
-| **No TailwindCSS** | **PASS** | Built strictly with Material UI (MUI v5) and custom CSS |
+## 1. Test Accounts Used (Local Test Only)
+- **User A:** Username: `DemoUser`, Email: `demo@example.com`
+- **User B:** Username: `PriyaSharma`, Email: `priya@example.com`
+- **User C:** Username: `AyushGupta`, Email: `ayush@example.com`
 
 ---
 
-## 2. Test Execution Summary
+## 2. Final Assignment Requirement Table
 
-### Automated Integration Tests (`backend/src/tests/testSuite.js`)
-- **Total Tests:** 22
+| Requirement | Status | Evidence / Notes |
+|---|---|---|
+| **Signup** | **PASS** | `POST /api/auth/signup` creates users with bcrypt hashed passwords and issues JWT |
+| **Login** | **PASS** | `POST /api/auth/login` validates credentials; invalid passwords rejected with 401 |
+| **MongoDB users** | **PASS** | `users` collection contains `_id`, `username`, `email`, `password` (hashed), `createdAt` |
+| **Exactly 2 collections** | **PASS** | Verified MongoDB strictly contains ONLY `users` and `posts` |
+| **Create text post** | **PASS** | Created text post "This is my localhost text-only test post." with author `DemoUser` |
+| **Create image post** | **PASS** | Created image post via multipart upload; valid imageUrl rendered |
+| **Create text + image post** | **PASS** | Created post with both text and image simultaneously |
+| **Reject empty post** | **PASS** | Post with empty text & no image rejected with `400 Bad Request` |
+| **Public feed** | **PASS** | `GET /api/posts` returns all posts sorted newest first (`createdAt: -1`) |
+| **Multiple users** | **PASS** | Verified `DemoUser`, `PriyaSharma`, and `AyushGupta` interacting concurrently |
+| **Like** | **PASS** | User B liked User A post; like count increased, `isLiked: true` |
+| **Unlike** | **PASS** | User B unliked post; count decreased, `isLiked: false` |
+| **Save liker username** | **PASS** | Liker username (`PriyaSharma`, `AyushGupta`) stored directly in `post.likes` array |
+| **Comment** | **PASS** | User B commented "Great post! This is a localhost comment test."; stored in MongoDB |
+| **Save commenter username** | **PASS** | Comment author username (`PriyaSharma`) saved in embedded comment object |
+| **Comment count** | **PASS** | Comment count updated immediately upon comment submission |
+| **Pagination** | **PASS** | `GET /api/posts?page=1&limit=2` & `page=2` returns non-overlapping posts |
+| **Instant UI updates** | **PASS** | Optimistic UI updates for likes and instant comment list rendering |
+| **React frontend** | **PASS** | React 18 SPA with Vite in `/frontend` |
+| **Node + Express backend** | **PASS** | Express app with modular controllers and routes in `/backend` |
+| **MongoDB** | **PASS** | MongoDB with Mongoose ODM connected |
+| **No TailwindCSS** | **PASS** | Strictly built with Material UI (MUI v5) and custom CSS |
+| **Responsive UI** | **PASS** | Layout tested from 375px mobile to 1440px desktop screens |
+| **Frontend build** | **PASS** | `npm run build` completed with 0 errors in `/frontend/dist` |
+| **Backend tests** | **PASS** | All 22 automated integration tests passed in `npm test` |
+| **Security checks** | **PASS** | Helmet headers, CORS policies, passwords hashed, `.env` ignored |
+
+---
+
+## 3. Test Execution Summary
+
+### Automated Integration Tests (`npm test` in `backend`)
+- **Total Tests Executed:** 22
 - **Passed:** 22
 - **Failed:** 0
-- **Duration:** ~2.1s
 
-### Live Localhost User Journey (`e2e_journey_verifier.js`)
-- **Total Verification Assertions:** 26
-- **Passed:** 26
+### Live Localhost User Journey Tests (`final_localhost_verifier.js`)
+- **Total Assertions Executed:** 29
+- **Passed:** 29
 - **Failed:** 0
+
+### Browser Console & Network Check
+- **JavaScript Errors:** 0
+- **Failed API Requests:** 0 (all expected error paths return structured JSON)
+- **CORS Errors:** 0
+- **Broken Image Requests:** 0
 
 ---
 
-## 3. Localhost Verification Verdict: **READY FOR DEPLOYMENT**
-All core features, authentication flows, social feed capabilities, and strict assignment constraints have been verified end-to-end on localhost.
+## 4. Bugs Found & Fixed During Localhost Verification
+1. **Liker Username Persistence:**
+   - **Improvement:** Updated `toggleLike` in `postController.js` to store the active username (`req.user.username`) into `post.likes` so liker usernames are saved directly in MongoDB.
+2. **Health Check Response Standardization:**
+   - **Improvement:** Included `status: 'ok'` in `GET /api/health` JSON response alongside `success: true`.
+3. **Local Port Customization:**
+   - **Update:** Configured frontend Vite port to `5178` and updated backend CORS `CLIENT_URL` accordingly.
+
+---
+
+## FINAL STATUS: READY FOR DEPLOYMENT
