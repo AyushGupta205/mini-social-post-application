@@ -2,6 +2,17 @@ const Post = require('../models/Post');
 const { sendSuccess, sendError } = require('../utils/responseHelper');
 
 /**
+ * Safely normalizes image URLs to HTTPS for secure cross-origin rendering
+ */
+const normalizeImageUrl = (url) => {
+  if (!url) return null;
+  if (url.startsWith('http://') && (url.includes('onrender.com') || url.includes('cloudinary.com'))) {
+    return url.replace(/^http:\/\//i, 'https://');
+  }
+  return url;
+};
+
+/**
  * @desc    Get all posts with pagination and like status
  * @route   GET /api/posts
  * @access  Public (Optional auth for like status)
@@ -37,7 +48,7 @@ const getPosts = async (req, res, next) => {
         userId: post.userId,
         username: post.username,
         text: post.text || '',
-        imageUrl: post.imageUrl || null,
+        imageUrl: normalizeImageUrl(post.imageUrl),
         likes: likesArray,
         likeCount: likesArray.length,
         comments: commentsArray,
@@ -72,12 +83,15 @@ const createPost = async (req, res, next) => {
 
     // Determine imageUrl from uploaded file
     if (req.file) {
-      if (req.file.path && req.file.path.startsWith('http')) {
-        // Cloudinary upload returns absolute URL in path
-        imageUrl = req.file.path;
+      if (req.file.path && (req.file.path.startsWith('http://') || req.file.path.startsWith('https://'))) {
+        // Cloudinary upload returns absolute URL in path - ensure secure https protocol
+        imageUrl = req.file.path.replace(/^http:\/\//i, 'https://');
+      } else if (req.file.secure_url) {
+        imageUrl = req.file.secure_url;
       } else if (req.file.filename) {
         // Local upload fallback: serve from /uploads/
-        const protocol = req.protocol;
+        const isSecure = req.secure || req.headers['x-forwarded-proto'] === 'https' || process.env.NODE_ENV === 'production';
+        const protocol = isSecure ? 'https' : (req.protocol || 'http');
         const host = req.get('host');
         imageUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
       }
@@ -98,7 +112,7 @@ const createPost = async (req, res, next) => {
       userId: req.user._id,
       username: req.user.username,
       text: trimmedText,
-      imageUrl: imageUrl,
+      imageUrl: normalizeImageUrl(imageUrl),
       likes: [],
       comments: []
     });

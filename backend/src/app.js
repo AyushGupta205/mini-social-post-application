@@ -11,6 +11,9 @@ const { notFoundHandler, globalErrorHandler } = require('./middleware/errorHandl
 
 const app = express();
 
+// Trust reverse proxy (Render, Vercel, load balancers) for accurate HTTPS protocol detection
+app.set('trust proxy', 1);
+
 // Security Middleware (allow cross-origin resources for images)
 app.use(
   helmet({

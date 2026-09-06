@@ -30,6 +30,16 @@ const PostCard = ({ post, onPostUpdated }) => {
   const [commentCount, setCommentCount] = useState(post.commentCount || (post.comments ? post.comments.length : 0));
   const [showComments, setShowComments] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  // Normalize image URL to HTTPS for secure cross-origin rendering
+  const getNormalizedImageUrl = (url) => {
+    if (!url) return null;
+    if (url.startsWith('http://') && (url.includes('onrender.com') || url.includes('cloudinary.com'))) {
+      return url.replace(/^http:\/\//i, 'https://');
+    }
+    return url;
+  };
 
   // Handle Like Toggle
   const handleLikeToggle = async () => {
@@ -128,14 +138,15 @@ const PostCard = ({ post, onPostUpdated }) => {
         </CardContent>
       )}
 
-      {/* Post Image */}
-      {post.imageUrl && (
+      {/* Post Image with Graceful Error Fallback */}
+      {post.imageUrl && !imageError && (
         <Box className="post-image-container">
           <img
-            src={post.imageUrl}
+            src={getNormalizedImageUrl(post.imageUrl)}
             alt="Post media attachment"
             className="post-image"
             loading="lazy"
+            onError={() => setImageError(true)}
           />
         </Box>
       )}

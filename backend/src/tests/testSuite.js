@@ -251,8 +251,29 @@ async function runTests() {
     assert(commentRes.status === 201 && commentRes.data.comment.username === 'priya_sharma', 'Adding comment saves username and comment text');
     assert(commentRes.data.commentCount === 1, 'Comment count updates immediately to 1');
 
-    // 9. Verify Only TWO MongoDB Collections Exist
-    console.log('\n--- 8. Database Collections Strict Audit ---');
+    // 9. Storage & Image Upload Integration Tests
+    console.log('\n--- 8. Storage & Image Upload Architecture ---');
+    const { isCloudinaryConfigured, configureCloudinary } = require('../config/cloudinary');
+    assert(typeof isCloudinaryConfigured === 'function', 'Cloudinary configuration validator is exported as function');
+    assert(typeof configureCloudinary === 'function', 'Cloudinary dynamic configuration function is available');
+
+    // Test creating post with HTTPS image URL
+    const httpsImgPost = await Post.create({
+      userId: user1Id,
+      username: 'ayush_dev',
+      text: 'Post with secure HTTPS cloud image',
+      imageUrl: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
+      likes: [],
+      comments: []
+    });
+    assert(httpsImgPost.imageUrl.startsWith('https://'), 'Post stores HTTPS image URL properly');
+
+    // Verify GET /api/posts returns the HTTPS URL intact
+    const getHttpsPostRes = await request('/api/posts?limit=1');
+    assert(getHttpsPostRes.status === 200 && getHttpsPostRes.data.posts[0].imageUrl.startsWith('https://'), 'GET /api/posts returns secure HTTPS image URL');
+
+    // 10. Verify Only TWO MongoDB Collections Exist
+    console.log('\n--- 9. Database Collections Strict Audit ---');
     const collections = await mongoose.connection.db.listCollections().toArray();
     const collectionNames = collections.map((c) => c.name);
     console.log(`  Found MongoDB collections in DB: [ ${collectionNames.join(', ')} ]`);

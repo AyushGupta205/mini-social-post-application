@@ -2,7 +2,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
-const { cloudinary, isCloudinaryConfigured } = require('../config/cloudinary');
+const { cloudinary, isCloudinaryConfigured, configureCloudinary } = require('../config/cloudinary');
 
 // Allowed image formats
 const ALLOWED_MIME_TYPES = [
@@ -27,26 +27,26 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-let storage;
+const getStorage = () => {
+  if (isCloudinaryConfigured()) {
+    configureCloudinary();
+    return new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: {
+        folder: 'mini-social-posts',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+        transformation: [{ width: 1200, crop: 'limit' }]
+      }
+    });
+  }
 
-if (isCloudinaryConfigured) {
-  // Production / Cloudinary Storage
-  storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: 'mini-social-posts',
-      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-      transformation: [{ width: 1200, crop: 'limit' }]
-    }
-  });
-} else {
-  // Local Disk Storage fallback
-  const uploadsDir = path.join(__dirname, '../../uploads');
+  // Local Disk Storage fallback (for development / testing environments only)
+  const uploadsDir = path.resolve(__dirname, '../../uploads');
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 
-  storage = multer.diskStorage({
+  return multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, uploadsDir);
     },
@@ -56,14 +56,46 @@ if (isCloudinaryConfigured) {
       cb(null, `post-${uniqueSuffix}${ext}`);
     }
   });
-}
+};
 
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5 MB max
-  },
-  fileFilter: fileFilter
-});
+const createMulterInstance = () => {
+  return multer({
+    storage: getStorage(),
+    limits: {
+      fileSize: 5 * 1024 * 1024 // 5 MB max
+    },
+    fileFilter: fileFilter
+  });
+};
+
+const upload = {
+  single: (fieldName) => {
+    return (req, res, next) => {
+      const uploader = createMulterInstance().single(fieldName);
+      uploader(req, res, (err) => {
+        if (err) return next(err);
+
+        // Fail-safe guard: If in production without Cloudinary, reject image upload attempts
+        if (req.file && process.env.NODE_ENV === 'production' && !isCloudinaryConfigured()) {
+          // Remove local file if written by fallback to avoid disk pollution
+          if (req.file.path && fs.existsSync(req.file.path)) {
+            try {
+              fs.unlinkSync(req.file.path);
+            } catch {
+              // Ignore cleanup error
+            }
+          }
+          return res.status(503).json({
+            success: false,
+            message:
+              'Image upload is currently unavailable in production because persistent cloud storage (Cloudinary) is not configured in environment variables.'
+          });
+        }
+
+        next();
+      });
+    };
+  }
+};
 
 module.exports = upload;
