@@ -155,7 +155,7 @@ const SignupPage = () => {
                 error={Boolean(errors.username)}
                 helperText={errors.username}
                 disabled={isSubmitting}
-                placeholder="e.g. ayush_gupta"
+                placeholder="Enter your username"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
