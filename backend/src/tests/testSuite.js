@@ -97,8 +97,8 @@ async function runTests() {
     // 3. User Registration (Signup)
     console.log('\n--- 2. Authentication: Signup ---');
     const user1Data = {
-      username: 'ayush_dev',
-      email: 'ayush.test@example.com',
+      username: 'demo_dev',
+      email: 'demo.test@example.com',
       password: 'Password123!'
     };
 
@@ -157,7 +157,7 @@ async function runTests() {
     const meRes = await request('/api/auth/me', {
       headers: { Authorization: `Bearer ${tokenUser1}` }
     });
-    assert(meRes.status === 200 && meRes.data.user.username === 'ayush_dev', 'GET /api/auth/me returns authenticated user profile');
+    assert(meRes.status === 200 && meRes.data.user.username === 'demo_dev', 'GET /api/auth/me returns authenticated user profile');
 
     // 5. Post Creation Tests
     console.log('\n--- 4. Post Creation (Text, Image, Text+Image, Validation) ---');
@@ -166,7 +166,7 @@ async function runTests() {
     const textPostRes = await request('/api/posts', {
       method: 'POST',
       headers: { Authorization: `Bearer ${tokenUser1}` },
-      body: { text: 'Hello from Ayush! This is my first text-only post.' }
+      body: { text: 'Hello from demo user! This is my first text-only post.' }
     });
     assert(textPostRes.status === 201 && textPostRes.data.post.text, 'Create text-only post succeeds');
     const textPostId = textPostRes.data.post._id;
@@ -193,7 +193,7 @@ async function runTests() {
     // Create a text + image post
     const textImgPost = await Post.create({
       userId: user1Id,
-      username: 'ayush_dev',
+      username: 'demo_dev',
       text: 'Exploring beautiful landscapes today!',
       imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
       likes: [],
@@ -246,7 +246,7 @@ async function runTests() {
     const commentRes = await request(`/api/posts/${textPostId}/comments`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${tokenUser2}` },
-      body: { text: 'Awesome post, Ayush! Looking forward to more.' }
+      body: { text: 'Awesome post! Looking forward to more.' }
     });
     assert(commentRes.status === 201 && commentRes.data.comment.username === 'priya_sharma', 'Adding comment saves username and comment text');
     assert(commentRes.data.commentCount === 1, 'Comment count updates immediately to 1');
@@ -260,7 +260,7 @@ async function runTests() {
     // Test creating post with HTTPS image URL
     const httpsImgPost = await Post.create({
       userId: user1Id,
-      username: 'ayush_dev',
+      username: 'demo_dev',
       text: 'Post with secure HTTPS cloud image',
       imageUrl: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
       likes: [],

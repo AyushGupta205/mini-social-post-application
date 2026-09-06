@@ -11,7 +11,7 @@
 ## 1. Test Accounts Used (Local Test Only)
 - **User A:** Username: `DemoUser`, Email: `demo@example.com`
 - **User B:** Username: `PriyaSharma`, Email: `priya@example.com`
-- **User C:** Username: `AyushGupta`, Email: `ayush@example.com`
+- **User C:** Username: `AlexMorgan`, Email: `alex@example.com`
 
 ---
 
@@ -28,10 +28,10 @@
 | **Create text + image post** | **PASS** | Created post with both text and image simultaneously |
 | **Reject empty post** | **PASS** | Post with empty text & no image rejected with `400 Bad Request` |
 | **Public feed** | **PASS** | `GET /api/posts` returns all posts sorted newest first (`createdAt: -1`) |
-| **Multiple users** | **PASS** | Verified `DemoUser`, `PriyaSharma`, and `AyushGupta` interacting concurrently |
+| **Multiple users** | **PASS** | Verified `DemoUser`, `PriyaSharma`, and `AlexMorgan` interacting concurrently |
 | **Like** | **PASS** | User B liked User A post; like count increased, `isLiked: true` |
 | **Unlike** | **PASS** | User B unliked post; count decreased, `isLiked: false` |
-| **Save liker username** | **PASS** | Liker username (`PriyaSharma`, `AyushGupta`) stored directly in `post.likes` array |
+| **Save liker username** | **PASS** | Liker username (`PriyaSharma`, `AlexMorgan`) stored directly in `post.likes` array |
 | **Comment** | **PASS** | User B commented "Great post! This is a localhost comment test."; stored in MongoDB |
 | **Save commenter username** | **PASS** | Comment author username (`PriyaSharma`) saved in embedded comment object |
 | **Comment count** | **PASS** | Comment count updated immediately upon comment submission |

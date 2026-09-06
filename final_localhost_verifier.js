@@ -119,12 +119,12 @@ async function runVerification() {
       assert(loginRes.status === 200, 'User B login succeeded with valid credentials');
     }
 
-    // 5. User C Authentication (AyushGupta)
-    console.log('\n--- 5. User C Authentication (AyushGupta) ---');
+    // 5. User C Authentication (AlexMorgan)
+    console.log('\n--- 5. User C Authentication (AlexMorgan) ---');
     const userCData = {
-      username: 'AyushGupta',
-      email: 'ayush@example.com',
-      password: 'Password123'
+      username: 'AlexMorgan',
+      email: 'alex@example.com',
+      password: 'Password123!'
     };
     let tokenC;
     let userC_Id;
@@ -270,7 +270,7 @@ async function runVerification() {
       headers: { Authorization: `Bearer ${tokenC}` }
     });
     const likeCData = await likeCRes.json();
-    assert(likeCRes.status === 200 && likeCData.likes.includes('AyushGupta'), 'User C (AyushGupta) can like post simultaneously');
+    assert(likeCRes.status === 200 && likeCData.likes.includes('AlexMorgan'), 'User C (AlexMorgan) can like post simultaneously');
 
     // User C comments on User A's post
     const commentCRes = await fetch(`${BACKEND_URL}/posts/${postA_Id}/comments`, {
@@ -282,7 +282,7 @@ async function runVerification() {
       body: JSON.stringify({ text: 'Awesome update DemoUser, looks great!' })
     });
     const commentCData = await commentCRes.json();
-    assert(commentCRes.status === 201 && commentCData.comment.username === 'AyushGupta', 'User C (AyushGupta) comment saved with correct username');
+    assert(commentCRes.status === 201 && commentCData.comment.username === 'AlexMorgan', 'User C (AlexMorgan) comment saved with correct username');
 
     // 11. Pagination Verification
     console.log('\n--- 11. Pagination Verification ---');

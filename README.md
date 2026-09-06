@@ -73,8 +73,8 @@ Stores registered user credentials.
 ```json
 {
   "_id": "66d81234567890abcdef1234",
-  "username": "ayush_gupta",
-  "email": "ayush@example.com",
+  "username": "demo_user",
+  "email": "demo@example.com",
   "password": "$2a$10$hashedPasswordString...",
   "createdAt": "2026-09-04T10:00:00.000Z"
 }
@@ -86,7 +86,7 @@ Stores posts with embedded likes and comments (no separate collections for likes
 {
   "_id": "66d89876543210fedcba5678",
   "userId": "66d81234567890abcdef1234",
-  "username": "ayush_gupta",
+  "username": "demo_user",
   "text": "Hello world! This is my first post on SocialSphere.",
   "imageUrl": "https://res.cloudinary.com/.../post-123.jpg",
   "likes": [
@@ -96,7 +96,7 @@ Stores posts with embedded likes and comments (no separate collections for likes
     {
       "_id": "66d89999543210fedcba9999",
       "userId": "66d81234567890abcdef1234",
-      "username": "ayush_gupta",
+      "username": "demo_user",
       "text": "Welcome to the platform!",
       "createdAt": "2026-09-04T10:05:00.000Z"
     }
@@ -140,8 +140,8 @@ Stores posts with embedded likes and comments (no separate collections for likes
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/mini-social-app.git
-cd mini-social-app
+git clone https://github.com/AyushGupta205/mini-social-post-application.git
+cd mini-social-post-application
 ```
 
 ### 2. Backend Setup
