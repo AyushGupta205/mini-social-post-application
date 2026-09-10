@@ -219,11 +219,7 @@ npm run dev
 
 ## 📸 Screenshots
 
-*(Add application screenshots here after deployment)*
-
-| Social Feed | Create Post | Mobile View |
-|---|---|---|
-| ![Feed Preview](https://via.placeholder.com/600x400.png?text=Social+Feed+Preview) | ![Create Post](https://via.placeholder.com/600x400.png?text=Create+Post+Modal) | ![Mobile View](https://via.placeholder.com/300x600.png?text=Mobile+Responsive) |
+> *Screenshots can be added here after capturing the current deployed application.*
 
 ---
 
